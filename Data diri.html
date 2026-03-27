@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BIODATA ULTIMATE | 3D PARTICLE EFFECT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        /* CANVAS BACKGROUND */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            padding: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeInUp 1s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* FLOATING AVATAR */
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .avatar {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d);
+            background-size: 400% 400%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            animation: float 3s ease-in-out infinite, gradientBG 5s ease infinite;
+            box-shadow: 0 0 50px rgba(78,205,196,0.5);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes gradientBG {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .glow-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(78,205,196,0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.2; }
+        }
+
+        /* TYPING ANIMATION */
+        .typing-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .glitch-text {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 2px 2px 0 #ff6b6b, -2px -2px 0 #4ecdc4;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg, 0deg); text-shadow: 2px 2px 0 #ff6b6b, -2px -2px 0 #4ecdc4; }
+            95% { transform: skew(0deg, 0deg); }
+            96% { transform: skew(5deg, 2deg); text-shadow: -2px -2px 0 #ff6b6b, 2px 2px 0 #4ecdc4; }
+            97% { transform: skew(-3deg, -1deg); }
+        }
+
+        .typing {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            border-right: 3px solid #4ecdc4;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3s steps(30, end), blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #4ecdc4; }
+        }
+
+        /* GRID CARDS */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .card-3d {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .card-3d:hover::before {
+            left: 100%;
+        }
+
+        .card-3d:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(78,205,196,0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s;
+        }
+
+        .info-item:hover {
+            transform: translateX(5px);
+        }
+
+        .info-icon {
+            font-size: 1.5rem;
+            min-width: 45px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4ecdc4;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* SKILL BARS WITH ANIMATION */
+        .skill-item {
+            margin: 20px 0;
+        }
+
+        .skill-name {
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .skill-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            border-radius: 10px;
+            width: 0;
+            animation: fillBar 1.5s ease-out forwards;
+        }
+
+        @keyframes fillBar {
+            to { width: var(--width); }
+        }
+
+        /* SKILL TAGS */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(78,205,196,0.2));
+            border-radius: 30px;
+            color: #fff;
+            font-size: 0.9rem;
+            border: 1px solid rgba(78,205,196,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .skill-tag:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(255,107,107,0.4), rgba(78,205,196,0.4));
+            border-color: #4ecdc4;
+            box-shadow: 0 0 15px rgba(78,205,196,0.3);
+        }
+
+        /* SOCIAL LINKS */
+        .social-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .social-btn {
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(78,205,196,0.5);
+            border-radius: 50px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78,205,196,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-btn:hover::before {
+            left: 100%;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(78,205,196,0.2);
+            border-color: #4ecdc4;
+            box-shadow: 0 5px 20px rgba(78,205,196,0.3);
+        }
+
+        /* RAINBOW BORDER ANIMATION */
+        .rainbow-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 40px;
+            padding: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96c93d, #ff6b6b);
+            background-size: 300% 100%;
+            animation: rainbow 3s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .glitch-text {
+                font-size: 1.8rem;
+            }
+            .typing {
+                font-size: 0.9rem;
+                white-space: normal;
+                animation: none;
+                border-right: none;
+            }
+            .grid-cards {
+                grid-template-columns: 1fr;
+            }
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-bg"></canvas>
+    
+    <div class="main-content">
+        <div class="container" style="position: relative;">
+            <div class="rainbow-border"></div>
+            
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <div class="avatar">
+                        🚀
+                    </div>
+                    <div class="glow-ring"></div>
+                </div>
+            </div>
+            
+            <div class="typing-wrapper">
+                <div class="glitch-text">FIQY FINZHA FIRDHANA</div>
+                <div class="typing">PEMULA CODING</div>
+            </div>
+            
+            <div class="grid-cards">
+                <div class="card-3d">
+                    <div class="card-title">📋 IDENTITAS</div>
+                    <div class="info-item">
+                        <div class="info-icon">👤</div>
+                        <div class="info-label">Nama Lengkap</div>
+                        <div class="info-value">FIQY FINZHA FIRDHANA</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🎂</div>
+                        <div class="info-label">Tempat, Tgl Lahir</div>
+                        <div class="info-value">Cirebon, 2010-11-23</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📍</div>
+                        <div class="info-label">Alamat</div>
+                        <div class="info-value">Jawa Barat , Cirebon</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📧</div>
+                        <div class="info-label">Email</div>
+                        <div class="info-value">fikyfinzha@gmail.com</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📱</div>
+                        <div class="info-label">Telepon</div>
+                        <div class="info-value">+62 812 3456 7890</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🎓 </div>
+                        <div class="info-label">Status</div>
+                        <div class="info-value">PELAJAR</div>
+                    </div>
+                </div>
+                
+                <div class="card-3d">
+                    <div class="card-title">🎓 PENDIDIKAN</div>
+                    <div class="info-item">
+                        <div class="info-icon">🎓</div>
+                        <div class="info-value">
+                            <strong>Sekolah Menengah Pertama</strong><br>
+                            <br>
+                        
+
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🏫</div>
+                        <div class="info-value">
+                            <strong>SMP N 1Depok</strong><br>
+                         <br>
+                            Nilai Rata-rata 94.2
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="card-3d">
+                    <div class="card-title">HOBI</div>
+                    <div class="info-item">
+                        <div class="info-icon">🫀</div>
+                        <div class="info-value">
+                            <strong>PRO PLAYER FF</strong><br>
+                            DARI MASA KE MASA<br>
+                            <span style="font-size: 0.85rem;">TOP ONE PLAYER PEPENG</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🚀</div>
+                        <div class="info-value">
+                            <strong>PRO PLAYER MOBILE LEGENDS</strong><br>
+                            DARI 2020-2026<br>
+                            <span style="font-size: 0.85rem;">PERNAH KE IMMO SOLO </span>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div class="grid-cards">
+                <div class="card-3d">
+                    <div class="card-title">💥 About Piky</div>
+                    <div class="skill-item">
+                        <div class="skill-name">GANTENG <span>100%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="--width: 95%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">PINTAR <span>92%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="--width: 92%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">COOL<span>88%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="--width: 88%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">BAIK <span>85%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="--width: 85%"></div></div>
+                    </div>
+                </div>
+                
+                <div class="card-3d">
+                    <div class="card-title">️😋 My Favorite Food</div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">NASI GORENG</span>
+                        <span class="skill-tag">SATE SAPI</span>
+                        <span class="skill-tag">MIE AYAM</span>
+                        <span class="skill-tag">SOTO</span>
+                        <span class="skill-tag">BATAGOR</span>
+                        <span class="skill-tag">SATE AYAM</span>
+                        <span class="skill-tag">TAHU GEJROT</span>
+                        <span class="skill-tag">MIE AYAM</span>
+                        <span class="skill-tag">MIE AYAM</span>
+                        <span class="skill-tag">MIE AYAM</span>
+                        <span class="skill-tag">AND MIE AYAM</span>
+                        <span class="skill-tag">I LOVE MIE AYAM</span>
+                    </div>
+                </div>
+                
+                <div class="card-3d">
+                    <div class="card-title">🏆 SERTIFIKASI</div>
+                    <div class="info-item">
+                        <div class="info-icon">🎯</div>
+                        <div class="info-value">Pernah ke glory</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🎯</div>
+                        <div class="info-value">player pepeng top One</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🎯</div>
+                        <div class="info-value">PLAYER PS TERBAIK</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🎯</div>
+                        <div class="info-value">JAGO ALL GAME</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="social-section">
+                <a href="https://wa.me/6289669880306?text=Halo%20Kak%20%20Piky%20yang%20ganteng%20" class="social-btn">💻 Whatsapp</a>
+                <a href="https://www.instagram.com/piky_ajaaaaaa?igsh=MTN6MTJvZm1pbGdzbQ==" class="social-btn">📷 Instagram</a>
+                <a href="https://www.facebook.com/share/1AjKNuUeC9/" class="social-btn">🔗 Facebook</a>
+                <a href="https://t.me/+6289669880306" class="social-btn">🐦 Telegram</a>
+                <a href="mailto:fikyfinzha@gmail.com" class="social-btn">📧 Email</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 3D PARTICLE SYSTEM - INTERACTIVE BACKGROUND
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        
+        let particles = [];
+        let mouseX = 0, mouseY = 0;
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        class Particle {
+       
